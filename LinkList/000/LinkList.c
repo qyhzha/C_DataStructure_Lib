@@ -1,4 +1,54 @@
 #include "LinkList.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+#define deBug(fmt, ...) printf("[%s, %d]"fmt, __FILE__, __LINE__, ##__VA_ARGS__)
+
+#define MALLOC(type, size)  (type*)malloc(sizeof(type) * size)
+#define FREE(p)             (free(p), p = NULL)
+
+#define STRUCT(type)    typedef struct __struct##type type;\
+                        struct __struct##type
+
+STRUCT(LLNode)
+{
+    DataType data;
+    LLNode *next;
+};
+
+struct __LinkList
+{
+    int len;
+    LLNode *next;
+    LLNode *m_current;
+};
+
+LLNode *move(LinkList *list, int i)
+{
+    LLNode *ret = NULL;
+
+    list->m_current = NULL;
+
+    if ((list != NULL) && (i >= 0) && (i < LinkListLength(list)))
+    {
+        LLNode *node = list->next;
+
+        if (node != NULL)
+        {
+            int j;
+
+            for (j = 0; j < i; j++)
+            {
+                node = node->next;
+            }
+
+            ret = node;
+            list->m_current = node;
+        }
+    }
+
+    return ret;
+}
 
 LinkList *LinkListCreate(void)      //O(1)
 {
@@ -34,9 +84,9 @@ int LinkListLength(LinkList *list)  //O(1)
     return (list != NULL) ? list->len : -1;
 }
 
-Bool LinkListInsert(LinkList *list, int i, DataType data)       //O(n)
+bool LinkListInsert(LinkList *list, int i, DataType data)       //O(n)
 {
-    Bool ret = (list != NULL) && (i >= 0) && (i <= LinkListLength(list));
+    bool ret = (list != NULL) && (i >= 0) && (i <= LinkListLength(list));
 
     if (ret)
     {
@@ -53,7 +103,7 @@ Bool LinkListInsert(LinkList *list, int i, DataType data)       //O(n)
             }
             else
             {
-                LLNode *pre = LinkListMove(list, i - 1);
+                LLNode *pre = move(list, i - 1);
 
                 node->data = data;
                 node->next = pre->next;
@@ -72,9 +122,9 @@ Bool LinkListInsert(LinkList *list, int i, DataType data)       //O(n)
     return ret;
 }
 
-Bool LinkListDelete(LinkList *list, int i, DataType *data)  //O(n)
+bool LinkListDelete(LinkList *list, int i, DataType *data)  //O(n)
 {
-    Bool ret = (i >= 0) && (i < LinkListLength(list));
+    bool ret = (i >= 0) && (i < LinkListLength(list));
 
     if (ret)
     {
@@ -87,7 +137,7 @@ Bool LinkListDelete(LinkList *list, int i, DataType *data)  //O(n)
         }
         else
         {
-            LLNode *pre = LinkListMove(list, i - 1);
+            LLNode *pre = move(list, i - 1);
 
             node = pre->next;
 
@@ -103,49 +153,29 @@ Bool LinkListDelete(LinkList *list, int i, DataType *data)  //O(n)
     return ret;
 }
 
-Bool LinkListSet(LinkList *list, int i, DataType data)  //O(n)
+bool LinkListSet(LinkList *list, int i, DataType data)  //O(n)
 {
     return ((i >= 0)
-            && (i < LinkListLength(list))) ? (LinkListMove(list, i)->data = data,
+            && (i < LinkListLength(list))) ? (move(list, i)->data = data,
                     true) : false;
 }
 
-Bool LinkListGet(LinkList *list, int i, DataType *data) //O(n)
+bool LinkListGet(LinkList *list, int i, DataType *data) //O(n)
 {
     return ((data != NULL) && (i >= 0)
-            && (i < LinkListLength(list))) ? (*data = LinkListMove(list, i)->data,
+            && (i < LinkListLength(list))) ? (*data = move(list, i)->data,
                     true) : false;
 }
 
 //下面四个配合使用用于遍历链表，时间复杂度为O(n)
-LLNode *LinkListMove(LinkList *list, int i)
+bool LinkListMove(LinkList *list, int i)
 {
-    LLNode *ret = NULL;
-
-    list->m_current = NULL;
-
-    if ((list != NULL) && (i >= 0) && (i < LinkListLength(list)))
-    {
-        LLNode *node = list->next;
-
-        if (node != NULL)
-        {
-            int j;
-
-            for (j = 0; j < i; j++)
-            {
-                node = node->next;
-            }
-
-            ret = node;
-            list->m_current = node;
-        }
-    }
-
-    return ret;
+    return ((i >= 0)
+            && (i < LinkListLength(list))) ? (list->m_current = move(list, i),
+                    true) : false;
 }
 
-Bool LinkListEnd(LinkList *list)
+bool LinkListEnd(LinkList *list)
 {
     return (list != NULL) ? (list->m_current == NULL) : false;
 }
@@ -172,7 +202,7 @@ int LinkListFind(LinkList *list, DataType data) //O(n)
     {
         int i = 0;
 
-        for (LinkListMove(list, 0); !LinkListEnd(list); LinkListNext(list), i++)
+        for (move(list, 0); !LinkListEnd(list); LinkListNext(list), i++)
         {
             if (LinkListCurrent(list) == data)
             {

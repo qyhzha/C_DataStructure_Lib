@@ -26,7 +26,7 @@ int main()
         printf("len = %d\n\n", LinkListLength(list));
 
         i = 0;
-        printf("��ʼ��ӡ������\n");
+        printf("begin printf\n");
         for (LinkListMove(list, 0); !LinkListEnd(list); LinkListNext(list), i++)
         {
             printf("list[%d] = %d\n", i, LinkListCurrent(list));
