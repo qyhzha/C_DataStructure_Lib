@@ -3,37 +3,37 @@
 
 int main()
 {
-	LinkList *list = LinkListCreate();
-	
-	if(list != NULL)
-	{
-		int i;
-		
-		printf("len = %d\n\n", LinkListLength(list));
-		
-		for(i = 0; i < 10; i++)
-		{
-			LinkListInsert(list, LinkListLength(list), i);
-		}
-		
-		printf("len = %d\n\n", LinkListLength(list));
-		
-		for(i = 0; i < 5; i++)
-		{
-			LinkListDelete(list, 0, NULL);
-		}
-		
-		printf("len = %d\n\n", LinkListLength(list));
-		
-		i = 0;
-		printf("¿ªÊ¼´òÓ¡Á´±í£º\n");
-		for(LinkListMove(list, 0); !LinkListEnd(list); LinkListNext(list), i++)
-		{
-			printf("list[%d] = %d\n", i, LinkListCurrent(list));
-		}
-		
-		list = LinkListDestroy(list);
-	}
-	
-	return 0;
+    LinkList *list = LinkListCreate();
+
+    if (list != NULL)
+    {
+        int i;
+
+        printf("len = %d\n\n", LinkListLength(list));
+
+        for (i = 0; i < 10; i++)
+        {
+            LinkListInsert(list, LinkListLength(list), i);
+        }
+
+        printf("len = %d\n\n", LinkListLength(list));
+
+        for (i = 0; i < 5; i++)
+        {
+            LinkListDelete(list, 0, NULL);
+        }
+
+        printf("len = %d\n\n", LinkListLength(list));
+
+        i = 0;
+        printf("ï¿½ï¿½Ê¼ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n");
+        for (LinkListMove(list, 0); !LinkListEnd(list); LinkListNext(list), i++)
+        {
+            printf("list[%d] = %d\n", i, LinkListCurrent(list));
+        }
+
+        list = LinkListDestroy(list);
+    }
+
+    return 0;
 }

@@ -4,12 +4,10 @@
 #ifdef __cplusplus
 extern "C"
 {
-#else
-typedef enum {false, true} bool;
 #endif
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define MALLOC(type, size)  ((type*)malloc(sizeof(type) * size))
 #define FREE(p)             (free(p), p = NULL)

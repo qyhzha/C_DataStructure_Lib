@@ -7,15 +7,15 @@
 #define deBug() printf("File = %s\nLine = %d\n", __FILE__, __LINE__)
 
 #ifndef __cplusplus
-	typedef enum {false, true} bool;
+typedef enum {false, true} bool;
 #endif
 
-#define MALLOC(type, size)	((type*)malloc(sizeof(type) * size))
-#define FREE(p)				(free(p), p = NULL)
+#define MALLOC(type, size)  ((type*)malloc(sizeof(type) * size))
+#define FREE(p)             (free(p), p = NULL)
 
-#define STRUCT(type) 	typedef struct __struct##type type;\
-						struct __struct##type 
-					
+#define STRUCT(type)    typedef struct __struct##type type;\
+                        struct __struct##type
+
 #define LinkListCurrent(list, type) (type*)current(list)
 
 typedef struct __LinkList LinkList;
@@ -25,7 +25,7 @@ LinkList *LinkListDestroy(LinkList *list);
 int LinkListLength(LinkList *list);
 bool LinkListInsert(LinkList *list, int i, void *data);
 bool LinkListDelete(LinkList *list, int i);
-int LinkListFind(LinkList *list, void *data); 
+int LinkListFind(LinkList *list, void *data);
 bool LinkListSet(LinkList *list, int i, void *data);
 void *LinkListGet(LinkList *list, int i);
 bool LinkListMove(LinkList *list, int i);

@@ -1,4 +1,5 @@
 #include "LinkList.h"
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C"
