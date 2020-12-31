@@ -27,9 +27,9 @@ int main()
 
         i = 0;
         printf("begin printf\n");
-        for (LinkListMove(list, 0); !LinkListEnd(list); LinkListNext(list), i++)
+        LinkListForEach(list)
         {
-            printf("list[%d] = %d\n", i, LinkListCurrent(list));
+            printf("list[%d] = %d\n", i, LinkListEntry(list));
         }
 
         list = LinkListDestroy(list);

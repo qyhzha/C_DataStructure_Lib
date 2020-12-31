@@ -1,29 +1,31 @@
 #include "LinkList.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#define MALLOC(type, size)  ((type*)malloc(sizeof(type) * size))
+#define FREE(p)             (free(p), p = NULL)
 
-STRUCT(LLNode)
+#define STRUCT(type)    typedef struct __struct##type type;\
+                        struct __struct##type
+
+typedef struct
 {
     void *data;
-    LLNode *next;
-};
+    Node *next;
+} Node;
 
 struct __LinkList
 {
     int len;
-    LLNode *next;
-    LLNode *m_current;
+    Node *next;
+    Node *m_current;
 };
 
-static LLNode *move(LinkList *list, int i)
+static Node *move(LinkList *list, int i)
 {
     if ((i >= 0) && (i < LinkListLength(list)))
     {
-        LLNode *node = list->next;
+        Node *node = list->next;
 
         int j;
         for (j = 0; j < i; j++)
@@ -77,7 +79,7 @@ bool LinkListInsert(LinkList *list, int i, void *data)      //O(n)
 
     if (ret)
     {
-        LLNode *node = MALLOC(LLNode, 1);
+        Node *node = MALLOC(Node, 1);
 
         if (node != NULL)
         {
@@ -90,7 +92,7 @@ bool LinkListInsert(LinkList *list, int i, void *data)      //O(n)
             }
             else
             {
-                LLNode *pre = move(list, i - 1);
+                Node *pre = move(list, i - 1);
 
                 node->data = data;
                 node->next = pre->next;
@@ -120,7 +122,7 @@ void *LinkListDelete(LinkList *list, int i) //O(n)
 
     if ((i >= 0) && (i < LinkListLength(list)))
     {
-        LLNode *node = list->next;
+        Node *node = list->next;
 
         if (0 == i)
         {
@@ -128,7 +130,7 @@ void *LinkListDelete(LinkList *list, int i) //O(n)
         }
         else
         {
-            LLNode *pre = move(list, i - 1);
+            Node *pre = move(list, i - 1);
 
             node = pre->next;
 
@@ -202,7 +204,3 @@ int LinkListFind(LinkList *list, void *data)    //O(n)
 
     return ret;
 }
-
-#ifdef __cplusplus
-}
-#endif

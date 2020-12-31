@@ -6,14 +6,7 @@ extern "C"
 {
 #endif
 
-#include <stdlib.h>
 #include <stdbool.h>
-
-#define MALLOC(type, size)  ((type*)malloc(sizeof(type) * size))
-#define FREE(p)             (free(p), p = NULL)
-
-#define STRUCT(type)    typedef struct __struct##type type;\
-                        struct __struct##type
 
 typedef struct __LinkList LinkList;
 

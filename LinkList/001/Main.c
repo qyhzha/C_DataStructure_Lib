@@ -1,6 +1,5 @@
 #include "LinkList.h"
 #include <stdio.h>
-#include <stdint.h>
 
 int main()
 {
@@ -10,7 +9,7 @@ int main()
     {
         for (int i = 0; i < 10; i++)
         {
-            int *data = MALLOC(int, 1);
+            int *data = malloc(sizeof(4));
 
             if (data == NULL)
             {
