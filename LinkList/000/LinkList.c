@@ -30,29 +30,20 @@ struct __LinkList
 
 static LLNode *move(LinkList *list, int i)
 {
-    LLNode *ret = NULL;
-
-    list->m_current = NULL;
-
-    if ((list != NULL) && (i >= 0) && (i < LinkListLength(list)))
+    if ((i >= 0) && (i < LinkListLength(list)))
     {
         LLNode *node = list->next;
 
-        if (node != NULL)
+        int j;
+        for (j = 0; j < i; j++)
         {
-            int j;
-
-            for (j = 0; j < i; j++)
-            {
-                node = node->next;
-            }
-
-            ret = node;
-            list->m_current = node;
+            node = node->next;
         }
+
+        return node;
     }
 
-    return ret;
+    return NULL;
 }
 
 LinkList *LinkListCreate(void)      //O(1)
