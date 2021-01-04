@@ -1,244 +1,255 @@
-#include "ClcLinkList.h"							
+#include "ClcLinkList.h"
+#include <stdlib.h>
+#include <stdio.h>
 
-ClcLinkList* ClcLinkListCreate(void)	//O(1)
+#define deBug(fmt, ...) printf("[%s, %d]"fmt, __FILE__, __LINE__, ##__VA_ARGS__)
+
+#define MALLOC(type, size)  (printf("malloc\n"), (type*)malloc(sizeof(type) * size))
+#define FREE(p)             \
+do                          \
+{                           \
+    if(p != NULL)           \
+    {                       \
+        free(p);            \
+		printf("free\n");   \
+        p = NULL;           \
+    }                       \
+}while(0)
+
+typedef struct __ClcNode
 {
-	ClcLinkList *list = MALLOC(ClcLinkList, 1);
-	
-	if(list != NULL)
-	{
-		list->next = NULL;
-		list->m_current = NULL;
-		list->len = 0;
-	}
-	
-	return list;
+    void *data;
+    struct __ClcNode *next;
+} ClcNode;
+
+struct __ClcLinkList
+{
+    int len;
+    ClcNode *next;
+    ClcNode *m_current;
+};
+
+static ClcNode *move(ClcLinkList *list, int i)
+{
+    int length = ClcLinkListLength(list);
+
+    i = (length > 0 && i >= 0) ? i % length : -1;
+
+    if (i >= 0)
+    {
+        ClcNode *node = list->next;
+
+        int j;
+        for (j = 0; j < i; j++)
+        {
+            node = node->next;
+        }
+
+        return node;
+    }
+
+    return NULL;
 }
 
-ClcLinkList* ClcLinkListDestroy(ClcLinkList *list)		//o(n)
+ClcLinkList *ClcLinkListCreate(void)    //O(1)
 {
-	if(list != NULL)
-	{
-		CLLNode *node = list->next;
-		
-		if(node != NULL)
-		{
-			CLLNode *pre = NULL;
-			
-			do
-			{
-				pre = node;
-				node = node->next;
-				free(pre);			
-			}while((node != NULL) && (node != list->next));
-		}
-		
-		FREE(list);		
-	}
-	
-	return NULL;
+    ClcLinkList *list = MALLOC(ClcLinkList, 1);
+
+    if (list != NULL)
+    {
+        list->next = NULL;
+        list->m_current = NULL;
+        list->len = 0;
+    }
+
+    return list;
 }
 
-int ClcLinkListLength(ClcLinkList *list)	//O(1)
+ClcLinkList *ClcLinkListDestroy(ClcLinkList *list)      //o(n)
 {
-	return (list != NULL) ? list->len : -1;
+    if (list != NULL)
+    {
+        ClcNode *node = list->next;
+
+        if (node != NULL)
+        {
+            ClcNode *pre = NULL;
+
+            do
+            {
+                pre = node;
+                node = node->next;
+                FREE(pre->data);
+                FREE(pre);
+            } while ((node != NULL) && (node != list->next));
+        }
+
+        FREE(list);
+    }
+
+    return NULL;
 }
 
-Bool ClcLinkListInsert(ClcLinkList *list, int i, DataType data)		//O(n)
+int ClcLinkListLength(ClcLinkList *list)    //O(1)
 {
-	Bool ret = (list != NULL);
-	int length = ClcLinkListLength(list);
-
-	i = ((length >= 0) && (i >= 0)) ? (i % (length + 1)) : -1;
-	ret = ret && (i >= 0);
-	
-	if(ret)
-	{
-		CLLNode *node = MALLOC(CLLNode, 1);
-		
-		if(node != NULL)
-		{
-			if(0 == i)
-			{										
-				node->data = data;		
-				
-				if(list->next != NULL) 
-				{
-					ClcLinkListMove(list, ClcLinkListLength(list) - 1)->next = node;
-					node->next = list->next;
-				}
-				else
-				{
-					node->next = node;
-				}
-				
-				list->next = node;
-			}
-			else
-			{
-				CLLNode *pre = ClcLinkListMove(list, i - 1);
-														
-				node->data = data;	
-				
-				node->next = pre->next;										
-				pre->next = node;
-			}
-			
-			list->len++;
-		}
-		else
-		{
-			ret = false;
-		}
-	}
-	
-	return ret;
+    return (list != NULL) ? list->len : -1;
 }
 
-Bool ClcLinkListDelete(ClcLinkList *list, int i, DataType *data)	//O(n)
+bool ClcLinkListInsert(ClcLinkList *list, int i, void *data)     //O(n)
 {
-	Bool ret = (list != NULL);
-	int length = ClcLinkListLength(list);
-	
-	i = ((length >= 0) && (i >= 0)) ? (i % length) : -1;
-	ret = ret && (i >= 0);
-	
-	if(ret)
-	{
-		CLLNode *node = NULL;
-		
-		if(0 == i)
-		{
-			node = list->next;
-			
-			if(node->next == node) list->next = NULL;
-			else
-			{ 
-				ClcLinkListMove(list, length - 1)->next = node->next;			
-				list->next = node->next;
-			}				
-		}
-		else
-		{
-			CLLNode *pre = ClcLinkListMove(list, i - 1);
-			
-			node = pre->next;	
-			
-			pre->next = node->next;			
-		}
-		
-		if(data) *data = node->data;
-		
-		free(node);
-		
-		list->len--;
-	}
-	
-	return ret;
+    i = (ClcLinkListLength(list) == 0) ? 0 : i;
+    if (list != NULL && i >= 0)
+    {
+        ClcNode *node = MALLOC(ClcNode, 1);
+
+        if (node != NULL)
+        {
+            if (0 == i)
+            {
+                node->data = data;
+
+                if (list->next != NULL)
+                {
+                    move(list, ClcLinkListLength(list) - 1)->next = node;
+                    node->next = list->next;
+                }
+                else
+                {
+                    node->next = node;
+                }
+
+                list->next = node;
+            }
+            else
+            {
+                ClcNode *pre = move(list, i - 1);
+
+                node->data = data;
+
+                node->next = pre->next;
+                pre->next = node;
+            }
+
+            list->len++;
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
-Bool ClcLinkListSet(ClcLinkList *list, int i, DataType data)	//O(n)
+bool ClcLinkListInsertBack(ClcLinkList *list, void *data)
 {
-	Bool ret = (list != NULL);
-	int length = ClcLinkListLength(list);
-	
-	i = ((length >= 0) && (i >= 0)) ? (i % length) : -1;
-	ret = ret && (i >= 0);
-	
-	if(ret)
-	{
-		ClcLinkListMove(list, i)->data = data;
-	}
-	
-	return ret;	
+    return ClcLinkListInsert(list, ClcLinkListLength(list), data);
 }
 
-Bool ClcLinkListGet(ClcLinkList *list, int i, DataType *data)	//O(n)
+void *ClcLinkListDelete(ClcLinkList *list, int i)    //O(n)
 {
-	Bool ret = (list != NULL) && (data != NULL);
-	int length = ClcLinkListLength(list);
-	
-	i = ((length >= 0) && (i >= 0)) ? (i % length) : -1;
-	ret = ret && (i >= 0);
-	
-	if(ret)
-	{
-		*data = ClcLinkListMove(list, i)->data;
-	}
-	
-	return ret;
+    void *data = NULL;
+
+    if (i >= 0 && ClcLinkListLength(list) > 0)
+    {
+        ClcNode *node = NULL;
+
+        if (0 == i)
+        {
+            node = list->next;
+
+            if (node->next == node) list->next = NULL;
+            else
+            {
+                move(list, ClcLinkListLength(list) - 1)->next = node->next;
+                list->next = node->next;
+            }
+        }
+        else
+        {
+            ClcNode *pre = move(list, i - 1);
+
+            node = pre->next;
+
+            pre->next = node->next;
+        }
+
+        data = node->data;
+
+        FREE(node);
+
+        list->len--;
+    }
+
+    return data;
+}
+
+bool ClcLinkListSet(ClcLinkList *list, int i, void *data)    //O(n)
+{
+    if (i >= 0 && ClcLinkListLength(list) > 0)
+    {
+        ClcNode *node = move(list, i);
+        FREE(node->data);
+        node->data = data;
+        return true;
+    }
+
+    return false;
+}
+
+void *ClcLinkListGet(ClcLinkList *list, int i)   //O(n)
+{
+    return ((ClcLinkListLength(list) > 0) && (i >= 0)) ? move(list, i)->data : NULL;
 }
 
 //下面4个函数配合使用以完成循环链表的遍历，时间复杂度为O(n)
-CLLNode *ClcLinkListMove(ClcLinkList *list, int i)
+bool ClcLinkListMove(ClcLinkList *list, int i)
 {
-	CLLNode *ret = NULL;
-	int len = ClcLinkListLength(list);
-	
-	i = ((len >= 0) && (i >= 0)) ? (i % len) : -1;
-	
-	list->m_current = NULL;
-	
-	if((list != NULL) && (i >= 0))
-	{		
-		ret = list->next;
-		
-		if(node != NULL)
-		{
-			int j;
-			
-			for(j = 0; j < i; j++)
-			{
-				ret = ret->next;	
-			}
-			
-			list->m_current = node;				
-		}	
-	}
-	
-	return ret;
+    return (i >= 0
+            && ClcLinkListLength(list) > 0) ? (list->m_current = move(list, i),
+                    true) : false;
 }
 
-Bool ClcLinkListEnd(ClcLinkList *list)
+bool ClcLinkListEnd(ClcLinkList *list)
 {
-	return (list != NULL) ? (list->m_current == NULL) : false;
+    return (list != NULL) ? (list->m_current == NULL) : false;
 }
 
 void ClcLinkListNext(ClcLinkList *list)
 {
-	if((list != NULL) && (list->m_current != NULL))
-	{
-		list->m_current = list->m_current->next; 
-	}
+    if ((list != NULL) && (list->m_current != NULL))
+    {
+        list->m_current = list->m_current->next;
+    }
 }
 
-DataType ClcLinkListCurrent(ClcLinkList *list)
+void *ClcLinkListCurrent(ClcLinkList *list)
 {
-	return ((list != NULL) && (list->m_current != NULL)) ? list->m_current->data : (DataType)0;
+    return ((list != NULL)
+            && (list->m_current != NULL)) ? list->m_current->data : NULL;
 }
 
-int ClcLinkListFind(ClcLinkList *list, DataType data)	//O(n)
+int ClcLinkListFind(ClcLinkList *list, void *data)   //O(n)
 {
-	int ret = -1;
-	
-	if(list)
-	{
-		CLLNode *node = list->next;
-		
-		if(node != NULL)
-		{
-			int i = 0;
-			do
-			{
-				if(node->data == data)
-				{
-					ret = i;
-					break;
-				}
-				
-				node = node->next;			
-			}while(node != list->next);
-		}		
-	}	
-	
-	return ret;
+    int ret = -1;
+
+    if (list)
+    {
+        ClcNode *node = list->next;
+
+        if (node != NULL)
+        {
+            int i = 0;
+            do
+            {
+                if (node->data == data)
+                {
+                    ret = i;
+                    break;
+                }
+
+                node = node->next;
+            } while (node != list->next);
+        }
+    }
+
+    return ret;
 }

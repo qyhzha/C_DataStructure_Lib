@@ -3,7 +3,15 @@
 #include <stdlib.h>
 
 #define MALLOC(type, size)  ((type*)malloc(sizeof(type) * size))
-#define FREE(p)             (free(p), p = NULL)
+#define FREE(p)             \
+do                          \
+{                           \
+    if(p != NULL)           \
+    {                       \
+        free(p);            \
+        p = NULL;           \
+    }                       \
+}while(0)
 
 typedef struct __Node
 {
@@ -56,7 +64,8 @@ LinkList *LinkListDestroy(LinkList *list)   //O(n)
     {
         while (list->next != NULL)
         {
-            LinkListDelete(list, 0);
+            void *data = LinkListDelete(list, 0);
+            FREE(data);
         }
 
         FREE(list);
@@ -150,8 +159,14 @@ void *LinkListDeleteBack(LinkList *list)
 
 bool LinkListSet(LinkList *list, int i, void *data) //O(n)
 {
-    return ((i >= 0)
-            && (i < LinkListLength(list))) ? (move(list, i)->data = data, true) : false;
+    if (i >= 0 && (i < LinkListLength(list)))
+    {
+        Node *node = move(list, i);
+        FREE(node->data);
+        node->data = data;
+        return true;
+    }
+    return false;
 }
 
 void *LinkListGet(LinkList *list, int i)    //O(n)
