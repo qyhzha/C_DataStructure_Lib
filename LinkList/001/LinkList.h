@@ -22,6 +22,8 @@ bool LinkListInsertBack(LinkList *list, void *data);    //O(n)
 
 void *LinkListDelete(LinkList *list, int i);    //O(n)
 
+void *LinkListDeleteBack(LinkList *list);       //O(n)
+
 bool LinkListSet(LinkList *list, int i, void *data);    //O(n)
 
 void *LinkListGet(LinkList *list, int i);   //O(n)

@@ -13,7 +13,7 @@ int main()
 
         for (i = 0; i < 10; i++)
         {
-            LinkListInsert(list, LinkListLength(list), i);
+            LinkListInsertBack(list, i);
         }
 
         printf("len = %d\n\n", LinkListLength(list));

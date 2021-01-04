@@ -5,13 +5,10 @@
 #define MALLOC(type, size)  ((type*)malloc(sizeof(type) * size))
 #define FREE(p)             (free(p), p = NULL)
 
-#define STRUCT(type)    typedef struct __struct##type type;\
-                        struct __struct##type
-
-typedef struct
+typedef struct __Node
 {
     void *data;
-    Node *next;
+    struct __Node *next;
 } Node;
 
 struct __LinkList
@@ -144,6 +141,11 @@ void *LinkListDelete(LinkList *list, int i) //O(n)
     }
 
     return ret;
+}
+
+void *LinkListDeleteBack(LinkList *list)
+{
+    return LinkListDelete(list, LinkListLength(list) - 1);
 }
 
 bool LinkListSet(LinkList *list, int i, void *data) //O(n)
