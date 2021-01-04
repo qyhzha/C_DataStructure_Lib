@@ -31,6 +31,7 @@ int main()
         {
             printf("list[%d] = %d\n", i, LinkListEntry(list));
         }
+        printf("end printf\n");
 
         list = LinkListDestroy(list);
     }

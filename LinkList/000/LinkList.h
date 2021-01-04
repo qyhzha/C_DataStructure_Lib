@@ -8,6 +8,8 @@ extern "C"
 
 typedef int DataType;
 
+#define INVALIDDATA 0xffffffff
+
 #include <stdbool.h>
 
 typedef struct __LinkList LinkList;
@@ -20,13 +22,19 @@ int LinkListLength(LinkList *list);
 
 bool LinkListInsert(LinkList *list, int i, DataType data);
 
+bool LinkListInsertBack(LinkList *list, DataType data);
+
 bool LinkListDelete(LinkList *list, int i, DataType *data);
+
+bool LinkListDeleteBack(LinkList *list, DataType *data);
 
 int LinkListFind(LinkList *list, DataType data);
 
 bool LinkListSet(LinkList *list, int i, DataType data);
 
 bool LinkListGet(LinkList *list, int i, DataType *data);
+
+DataType LinkListGetData(LinkList *list, int i);
 
 bool LinkListMove(LinkList *list, int i);
 

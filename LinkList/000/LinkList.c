@@ -5,16 +5,21 @@
 #define deBug(fmt, ...) printf("[%s, %d]"fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
 #define MALLOC(type, size)  (type*)malloc(sizeof(type) * size)
-#define FREE(p)             (free(p), p = NULL)
+#define FREE(p)             \
+do                          \
+{                           \
+    if(p != NULL)           \
+    {                       \
+        free(p);            \
+        p = NULL;           \
+    }                       \
+}while(0)
 
-#define STRUCT(type)    typedef struct __struct##type type;\
-                        struct __struct##type
-
-STRUCT(LLNode)
+typedef struct __LLNode
 {
     DataType data;
-    LLNode *next;
-};
+    struct __LLNode *next;
+} LLNode;
 
 struct __LinkList
 {
@@ -23,7 +28,7 @@ struct __LinkList
     LLNode *m_current;
 };
 
-LLNode *move(LinkList *list, int i)
+static LLNode *move(LinkList *list, int i)
 {
     LLNode *ret = NULL;
 
@@ -122,6 +127,11 @@ bool LinkListInsert(LinkList *list, int i, DataType data)       //O(n)
     return ret;
 }
 
+bool LinkListInsertBack(LinkList *list, DataType data)
+{
+    return LinkListInsert(list, LinkListLength(list), data);
+}
+
 bool LinkListDelete(LinkList *list, int i, DataType *data)  //O(n)
 {
     bool ret = (i >= 0) && (i < LinkListLength(list));
@@ -153,6 +163,11 @@ bool LinkListDelete(LinkList *list, int i, DataType *data)  //O(n)
     return ret;
 }
 
+bool LinkListDeleteBack(LinkList *list, DataType *data)
+{
+    return LinkListDelete(list, LinkListLength(list) - 1, data);
+}
+
 bool LinkListSet(LinkList *list, int i, DataType data)  //O(n)
 {
     return ((i >= 0)
@@ -165,6 +180,19 @@ bool LinkListGet(LinkList *list, int i, DataType *data) //O(n)
     return ((data != NULL) && (i >= 0)
             && (i < LinkListLength(list))) ? (*data = move(list, i)->data,
                     true) : false;
+}
+
+DataType LinkListGetData(LinkList *list, int i)
+{
+    DataType data;
+
+    if(LinkListGet(list, i, &data) != true)
+    {
+        deBug("invalid parameter.");
+        return INVALIDDATA;
+    }
+
+    return data;
 }
 
 //下面四个配合使用用于遍历链表，时间复杂度为O(n)
